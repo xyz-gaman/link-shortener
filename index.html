@@ -1,115 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ShortURL</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortURL - Fast URL Shortener</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f3f6fb;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-      }
-      .container {
-        width: 90%;
-        max-width: 700px;
-        background: white;
-        padding: 32px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      }
-      h1 {
-        margin-top: 0;
-      }
-      form {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      input {
-        flex: 1;
-        min-width: 220px;
-        padding: 14px 16px;
-        border: 1px solid #dfe7f1;
-        border-radius: 10px;
-        font-size: 16px;
-      }
-      button {
-        background: #2563eb;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 14px 18px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-      #result {
-        margin-top: 20px;
-        padding: 12px 16px;
-        background: #eef6ff;
-        border-radius: 10px;
-        display: none;
-        word-break: break-all;
-      }
-      a {
-        color: #1d4ed8;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>ShortURL</h1>
-      <form id="shortenForm">
-        <input
-          id="urlInput"
-          type="url"
-          placeholder="https://example.com/very/long/url"
-          required
-        />
-        <button type="submit">Shorten</button>
-      </form>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      <div id="result">
-        <strong>Short link:</strong>
-        <br />
-        <a id="shortUrl" href="#" target="_blank"></a>
-      </div>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 50px 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        input[type="url"],
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="url"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            display: none;
+            background: #f0f4ff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .short-url-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            margin-bottom: 15px;
+            word-break: break-all;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            padding: 12px 25px;
+            font-size: 0.95em;
+            margin-right: 10px;
+            display: inline-block;
+            width: auto;
+            margin-bottom: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+        }
+
+        .open-btn {
+            background: #28a745;
+            padding: 12px 25px;
+            font-size: 0.95em;
+            display: inline-block;
+            width: auto;
+            margin-bottom: 10px;
+        }
+
+        .open-btn:hover {
+            background: #218838;
+        }
+
+        .copy-feedback {
+            color: #28a745;
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .copy-feedback.show {
+            display: block;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .error {
+            color: #dc3545;
+            padding: 15px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ ShortURL</h1>
+            <p>Fast, Simple & Ad-Free URL Shortener</p>
+        </div>
+
+        <form id="shortenForm">
+            <div class="form-group">
+                <label for="urlInput">Paste Your Long URL</label>
+                <input 
+                    id="urlInput" 
+                    type="url" 
+                    placeholder="https://example.com/very/long/url/path" 
+                    required
+                    autofocus
+                >
+            </div>
+
+            <button type="submit">🔗 Create Short Link</button>
+        </form>
+
+        <div class="error" id="error"></div>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-label">✅ Your Short Link is Ready!</div>
+            <div class="short-url-box" id="shortUrl"></div>
+            
+            <button class="copy-btn" id="copyBtn">📋 Copy Link</button>
+            <button class="open-btn" id="openBtn">🔓 Open Link</button>
+            
+            <div class="copy-feedback" id="copyFeedback">✓ Copied to clipboard!</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="linkCount">0</div>
+                <div class="stat-label">Links Created</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Ads Blocked</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Free</div>
+            </div>
+        </div>
     </div>
 
     <script>
-      const form = document.getElementById("shortenForm");
-      const urlInput = document.getElementById("urlInput");
-      const result = document.getElementById("result");
-      const shortUrl = document.getElementById("shortUrl");
+        const form = document.getElementById("shortenForm");
+        const urlInput = document.getElementById("urlInput");
+        const resultBox = document.getElementById("resultBox");
+        const shortUrlEl = document.getElementById("shortUrl");
+        const copyBtn = document.getElementById("copyBtn");
+        const openBtn = document.getElementById("openBtn");
+        const copyFeedback = document.getElementById("copyFeedback");
+        const errorEl = document.getElementById("error");
+        const linkCountEl = document.getElementById("linkCount");
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        let linkCount = parseInt(localStorage.getItem("linkCount")) || 0;
+        linkCountEl.textContent = linkCount;
 
-        const url = urlInput.value.trim();
-        if (!url) return;
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            errorEl.classList.remove("show");
+            resultBox.classList.remove("show");
+            copyFeedback.classList.remove("show");
 
-        const res = await fetch("/shorten", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url })
+            const url = urlInput.value.trim();
+            if (!url) return;
+
+            try {
+                const response = await fetch("/shorten", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || "Failed to shorten URL");
+                }
+
+                shortUrlEl.textContent = data.shortUrl;
+                resultBox.classList.add("show");
+                
+                linkCount++;
+                localStorage.setItem("linkCount", linkCount);
+                linkCountEl.textContent = linkCount;
+
+                urlInput.value = "";
+                urlInput.focus();
+            } catch (err) {
+                errorEl.textContent = "❌ " + err.message;
+                errorEl.classList.add("show");
+            }
         });
 
-        const data = await res.json();
+        copyBtn.addEventListener("click", () => {
+            const shortUrl = shortUrlEl.textContent;
+            navigator.clipboard.writeText(shortUrl).then(() => {
+                copyFeedback.classList.add("show");
+                setTimeout(() => copyFeedback.classList.remove("show"), 2000);
+            });
+        });
 
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-
-        shortUrl.href = data.shortUrl;
-        shortUrl.textContent = data.shortUrl;
-        result.style.display = "block";
-      });
+        openBtn.addEventListener("click", () => {
+            const shortUrl = shortUrlEl.textContent;
+            window.open(shortUrl, "_blank");
+        });
     </script>
-  </body>
+</body>
 </html>
