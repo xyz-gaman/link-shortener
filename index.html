@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShortURL</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f3f6fb;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .container {
+        width: 90%;
+        max-width: 700px;
+        background: white;
+        padding: 32px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      }
+      h1 {
+        margin-top: 0;
+      }
+      form {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      input {
+        flex: 1;
+        min-width: 220px;
+        padding: 14px 16px;
+        border: 1px solid #dfe7f1;
+        border-radius: 10px;
+        font-size: 16px;
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #result {
+        margin-top: 20px;
+        padding: 12px 16px;
+        background: #eef6ff;
+        border-radius: 10px;
+        display: none;
+        word-break: break-all;
+      }
+      a {
+        color: #1d4ed8;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ShortURL</h1>
+      <form id="shortenForm">
+        <input
+          id="urlInput"
+          type="url"
+          placeholder="https://example.com/very/long/url"
+          required
+        />
+        <button type="submit">Shorten</button>
+      </form>
+
+      <div id="result">
+        <strong>Short link:</strong>
+        <br />
+        <a id="shortUrl" href="#" target="_blank"></a>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("shortenForm");
+      const urlInput = document.getElementById("urlInput");
+      const result = document.getElementById("result");
+      const shortUrl = document.getElementById("shortUrl");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const url = urlInput.value.trim();
+        if (!url) return;
+
+        const res = await fetch("/shorten", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+        shortUrl.href = data.shortUrl;
+        shortUrl.textContent = data.shortUrl;
+        result.style.display = "block";
+      });
+    </script>
+  </body>
+</html>
